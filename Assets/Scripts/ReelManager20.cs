@@ -17,6 +17,15 @@ public class ReelManager20 : MonoBehaviour
     [Header("Play Button")]
     public DetectMouseClick detectMouseClick;
 
+    [Header("Winning UI")]
+    public GameObject winningUI;
+    TMPro.TextMeshProUGUI winningUiTMP;
+
+    [Header("Arrows")]
+    public GameObject arrow1;
+    public GameObject arrow2;
+    public GameObject arrow3;
+
     Spin20 spin1;
     Spin20 spin2;
     Spin20 spin3;
@@ -38,6 +47,8 @@ public class ReelManager20 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        winningUiTMP = winningUI.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+
         spin1 = reel1.GetComponent<Spin20>();
         spin2 = reel2.GetComponent<Spin20>();
         spin3 = reel3.GetComponent<Spin20>();
@@ -52,6 +63,20 @@ public class ReelManager20 : MonoBehaviour
             mats[2,i] = spin3.signMaterials[i];
             mats[3,i] = spin4.signMaterials[i];
             mats[4,i] = spin5.signMaterials[i];
+        }
+
+        // * nastau leve puščiče glede na mode
+        if (easyMode)
+        {
+            arrow1.GetComponent<MeshRenderer>().material.EnableKeyword("_EMISSION");
+            arrow2.GetComponent<MeshRenderer>().material.EnableKeyword("_EMISSION");
+            arrow3.GetComponent<MeshRenderer>().material.EnableKeyword("_EMISSION");
+        }
+        else
+        {
+            arrow1.GetComponent<MeshRenderer>().material.DisableKeyword("_EMISSION");
+            arrow2.GetComponent<MeshRenderer>().material.EnableKeyword("_EMISSION");
+            arrow3.GetComponent<MeshRenderer>().material.DisableKeyword("_EMISSION");
         }
     }
 
@@ -125,7 +150,7 @@ public class ReelManager20 : MonoBehaviour
                     if (reel1_middle == reel4_middle && reel1_middle == reel5_middle)
                     {
                         //* YOU DA MAN (1 in 10.000 chance)
-                        Debug.Log("HOLY JESUS, YOU JUST WON THE GRAND PRIZE (1 in 10.000)");
+                        Debug.Log("HOLY JESUS, YOU JUST WON THE GRAND PRIZE (1 in 10.000 chance)");
                         winCase = 6;
 
                     }
@@ -348,12 +373,16 @@ public class ReelManager20 : MonoBehaviour
     IEnumerator WinningAnimBasic(int winCase, int idx1, int idx2, int idx3, int idx4, int idx5)
     {
         winAnim = true;
-        // Debug.Log(winCase);
+        winningUI.SetActive(true);
+        yield return new WaitForSeconds(0.25f);
+
         switch (winCase)
         {
+            //* matched 123
             case 3:
                 for (int i = 0; i < 5; i++)
                 {
+                    winningUiTMP.text = "3 MATCH WIN!";
                     mats[0, idx1].EnableKeyword("_EMISSION");
                     mats[1, idx2].EnableKeyword("_EMISSION");
                     mats[2, idx3].EnableKeyword("_EMISSION");
@@ -364,9 +393,11 @@ public class ReelManager20 : MonoBehaviour
                     yield return new WaitForSeconds(0.5f);
                 }
                 break;
+            //* matched 1234
             case 4:
                 for (int i = 0; i < 5; i++)
                 {
+                    winningUiTMP.text = "4 MATCH WIN!";
                     mats[0, idx1].EnableKeyword("_EMISSION");
                     mats[1, idx2].EnableKeyword("_EMISSION");
                     mats[2, idx3].EnableKeyword("_EMISSION");
@@ -379,9 +410,11 @@ public class ReelManager20 : MonoBehaviour
                     yield return new WaitForSeconds(0.5f);
                 }
                 break;
+            //* matched 1235
             case 5:
                 for (int i = 0; i < 5; i++)
                 {
+                    winningUiTMP.text = "4 MATCH WIN!";
                     mats[0, idx1].EnableKeyword("_EMISSION");
                     mats[1, idx2].EnableKeyword("_EMISSION");
                     mats[2, idx3].EnableKeyword("_EMISSION");
@@ -394,9 +427,11 @@ public class ReelManager20 : MonoBehaviour
                     yield return new WaitForSeconds(0.5f);
                 }
                 break;
+            //* matched 12345
             case 6:
                 for (int i = 0; i < 5; i++)
                 {
+                    winningUiTMP.text = "5 MATCH WIN!";
                     mats[0, idx1].EnableKeyword("_EMISSION");
                     mats[1, idx2].EnableKeyword("_EMISSION");
                     mats[2, idx3].EnableKeyword("_EMISSION");
@@ -417,6 +452,7 @@ public class ReelManager20 : MonoBehaviour
         }
         //* ko je konc win animacije, uklop play button emission
         detectMouseClick.EnableEmission();
+        winningUI.SetActive(false);
         winAnim = false;
     }
 

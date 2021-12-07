@@ -11,6 +11,9 @@ public class Spin20 : MonoBehaviour
     public float deceleration = 0.05f;
     public int minSignTurns = 12;  // obrne naj se za najmn 12 znakov.. torej za krog pa pou
     public int maxSignTurns = 24;  // največ 4.5 kroge
+    public float initialRotation;
+    float currentRotation;
+    float endRotation;
 
     [Header("Other Reels")] //* Settings Other Reels
     public Spin20 reelSpin1;
@@ -48,9 +51,6 @@ public class Spin20 : MonoBehaviour
     [HideInInspector]
     public float timeCounter = 0f;
 
-    float initialRotation;
-    float currentRotation;
-    float endRotation;
 
 
     [Header("Play Button")]
@@ -93,8 +93,13 @@ public class Spin20 : MonoBehaviour
         }
         else
         {
-            initialRotation = transform.rotation.eulerAngles.x;
-            currentRotation = initialRotation;   
+            // if (transform.name == "Reel 1")
+            // {
+            //     Debug.Log("transform rot: " + transform.localRotation.eulerAngles.x);
+            // }
+            // ! "Back at it again with the Gimbal lock" - Leonhard Euler
+            // initialRotation = transform.rotation.eulerAngles.x;
+            currentRotation = initialRotation;
         }
         
     }
@@ -161,7 +166,6 @@ public class Spin20 : MonoBehaviour
             currentRotation = endRotation;
             initialRotation = endRotation;
 
-            // TODO: zrihtej obično zmago
             // * poprau kot
             angleAdjusted = endRotation % 360f - 18f;
             if (angleAdjusted < 0f)
