@@ -7,6 +7,7 @@ public class Spin20 : MonoBehaviour
     // * Variables
 
     [Header("Main")]    //* Settings Main
+    public bool randomizeRotation = true;
     public float deceleration = 0.05f;
     public int minSignTurns = 12;  // obrne naj se za najmn 12 znakov.. torej za krog pa pou
     public int maxSignTurns = 24;  // največ 4.5 kroge
@@ -27,6 +28,7 @@ public class Spin20 : MonoBehaviour
     // public string sign292_5 = "G";
     // public string sign337_5 = "H";
 
+    [Header("Signs")]
     public GameObject[] signObjects = new GameObject[20];
     [HideInInspector]
     public Material[] signMaterials = new Material[20];
@@ -40,14 +42,19 @@ public class Spin20 : MonoBehaviour
     public float spinSpeed;
 
     int signTurns;
-    bool calculateSpin = false;
+    [HideInInspector]
+    public bool calculateSpin = false;
     bool calculateSpinPrev = false;
-    float timeCounter = 0f;
+    [HideInInspector]
+    public float timeCounter = 0f;
 
     float initialRotation;
     float currentRotation;
     float endRotation;
 
+
+    [Header("Play Button")]
+    public DetectMouseClick detectMouseClick;
 
     // * v = sqrt(2*a*d).... izračun končne hitrosti ob znanem pospešku in razdlaji *ali za moj primer* izračun začetne hitrosti ob znanem pojemku in številu obratov
     // * končna rotacija = začetna rotacija + signTurns*45°
@@ -77,7 +84,7 @@ public class Spin20 : MonoBehaviour
 
     private void Start() 
     {
-        if (true)
+        if (randomizeRotation)
         {
             float randomSign = Random.Range(1, 20);
             initialRotation = randomSign * 18f;
@@ -86,8 +93,8 @@ public class Spin20 : MonoBehaviour
         }
         else
         {
-            // initialRotation = transform.rotation.eulerAngles.x;
-            // currentRotation = initialRotation;   
+            initialRotation = transform.rotation.eulerAngles.x;
+            currentRotation = initialRotation;   
         }
         
     }
@@ -109,12 +116,13 @@ public class Spin20 : MonoBehaviour
 
     void HandleInput()
     {
-        // *če so se vsi nehal vrtet lahku zaženš
-        if (Input.GetKeyDown(KeyCode.Space) && spinSpeed == 0f && reelSpin1.spinSpeed == 0 && reelSpin2.spinSpeed == 0 && reelSpin3.spinSpeed == 0 && reelSpin4.spinSpeed == 0)
-        {
-            calculateSpin = true;
-            timeCounter = 0;
-        }
+        // (že nastavš iz reelManagerja)
+        // // *če so se vsi nehal vrtet lahku zaženš
+        // if ((Input.GetKeyDown(KeyCode.Space) || detectMouseClick.play) && spinSpeed == 0f && reelSpin1.spinSpeed == 0 && reelSpin2.spinSpeed == 0 && reelSpin3.spinSpeed == 0 && reelSpin4.spinSpeed == 0)
+        // {
+        //     calculateSpin = true;
+        //     timeCounter = 0;
+        // }
     }
 
     void SpinReel()

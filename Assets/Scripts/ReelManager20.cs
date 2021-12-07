@@ -5,7 +5,7 @@ using UnityEngine;
 public class ReelManager20 : MonoBehaviour
 {
     [Header("Main")]
-    public bool eaysMode = true;
+    public bool easyMode = true;
 
     [Header("Reel Transforms")]
     public Transform reel1;
@@ -13,6 +13,9 @@ public class ReelManager20 : MonoBehaviour
     public Transform reel3;
     public Transform reel4;
     public Transform reel5;
+
+    [Header("Play Button")]
+    public DetectMouseClick detectMouseClick;
 
     Spin20 spin1;
     Spin20 spin2;
@@ -22,15 +25,15 @@ public class ReelManager20 : MonoBehaviour
 
     Material[,] mats = new Material[5, 20];
 
-    // float spinSpeed1;
-    // float spinSpeed2;
-    // float spinSpeed3;
-    // float spinSpeed4;
-    // float spinSpeed5;
+
 
     // bool won = false;
-    bool rolling = false;
+    [HideInInspector]
+    public bool rolling = false;
     bool rollingPrev = false;
+
+    [HideInInspector]
+    public bool winAnim = false;
 
     // Start is called before the first frame update
     void Start()
@@ -103,29 +106,63 @@ public class ReelManager20 : MonoBehaviour
 
             // * Winning if middle row is aligned
             //*
-            if (!eaysMode)
+            if (!easyMode)
             {
-                //* top row
-                if (reel1_top == reel2_top && reel1_top == reel3_top)
-                // if (spin1.top == spin2.top && spin1.top == spin3.top)
-                {
-                    Debug.Log("****** YOU HAVE WON; top row:\n" + reel1_top + " " + reel2_top + " " + reel3_top + "\no o o\no o o");
-                    // won = true;
-                }
+                // //* top row
+                // if (reel1_top == reel2_top && reel1_top == reel3_top)
+                // // if (spin1.top == spin2.top && spin1.top == spin3.top)
+                // {
+                //     Debug.Log("****** YOU HAVE WON; top row:\n" + reel1_top + " " + reel2_top + " " + reel3_top + "\no o o\no o o");
+                //     // won = true;
+                // }
                 //* middle row
                 if (reel1_middle == reel2_middle && reel1_middle == reel3_middle)
                 // if (spin1.middle == spin2.middle && spin1.middle == spin3.middle)
                 {
-                    Debug.Log("****** YOU HAVE WON; middle row:\no o o" + reel1_middle + " " + reel2_middle + " " + reel3_middle + "\no o o");
-                    // won = true;
+                    int winCase = 0;
+                    // Debug.Log("****** YOU HAVE WON; middle row:\no o o" + reel1_middle + " " + reel2_middle + " " + reel3_middle + "\no o o");
+
+                    if (reel1_middle == reel4_middle && reel1_middle == reel5_middle)
+                    {
+                        //* YOU DA MAN (1 in 10.000 chance)
+                        Debug.Log("HOLY JESUS, YOU JUST WON THE GRAND PRIZE (1 in 10.000)");
+                        winCase = 6;
+
+                    }
+                    else if (reel1_middle == reel4_middle)
+                    {
+                        //* (1 in 1.000 chance)
+                        Debug.Log("Won with 4 signs (1 in 1.000 chance)");
+                        winCase = 4;
+                    }
+                    else if (reel1_middle == reel5_middle)
+                    {
+                        //* (1 in 1.000 chance)
+                        Debug.Log("Won with 4 signs (1 in 1.000 chance)");
+                        winCase = 5;
+                    }
+                    else
+                    {
+                        //* (1 in 100 chance)
+                        Debug.Log("Won with 3 signs (1 in 100 chance)");
+                        winCase = 3;
+                    }
+
+                    StartCoroutine(WinningAnimBasic(winCase, idx1_middle, idx2_middle, idx3_middle, idx4_middle, idx5_middle));
+
                 }
-                //* bot row
-                if (reel1_bot == reel2_bot && reel1_bot == reel3_bot)
-                // if (spin1.bot == spin2.bot && spin1.bot == spin3.bot)
+                else
                 {
-                    Debug.Log("****** YOU HAVE WON; bot row:\no o o\no o o" + reel1_bot +" "+ reel2_bot + " " + reel3_bot);
-                    // won = true;
+                    //* ko se ustau, sklop emission (če nis zmagou)
+                    detectMouseClick.EnableEmission();
                 }
+                // //* bot row
+                // if (reel1_bot == reel2_bot && reel1_bot == reel3_bot)
+                // // if (spin1.bot == spin2.bot && spin1.bot == spin3.bot)
+                // {
+                //     Debug.Log("****** YOU HAVE WON; bot row:\no o o\no o o" + reel1_bot +" "+ reel2_bot + " " + reel3_bot);
+                //     // won = true;
+                // }
             }
             // * Winning if there is a match of numbers in any row of first three reels
             //*
@@ -236,13 +273,18 @@ public class ReelManager20 : MonoBehaviour
                                         }
                                     }
                                 }
+                                else
+                                {
+                                    //* ko se ustau, sklop emission (če nis zmagou)
+                                    detectMouseClick.EnableEmission();
+                                }
                             }
                         }
                     }
                 }
 
                 // * WINNING ANIM
-                StartCoroutine(WinningAnim(winningStrs, winningRows, winningCols));
+                StartCoroutine(WinningAnimEasy(winningStrs, winningRows, winningCols));
 
             }
 
@@ -252,10 +294,13 @@ public class ReelManager20 : MonoBehaviour
         rollingPrev = rolling;
     }
 
-    IEnumerator WinningAnim(List<string> winningStrs, List<string> winningRows, List<string> winningCols)
+    IEnumerator WinningAnimEasy(List<string> winningStrs, List<string> winningRows, List<string> winningCols)
     {
+
         if (winningStrs.Count != 0)
         {
+
+            winAnim = true;
 
             // Debug.Log(winningStrs.Count);
             //* za vsak element winning columna (ki vsebuje vsaj 3 string indexe)
@@ -294,18 +339,111 @@ public class ReelManager20 : MonoBehaviour
 
 
             }
+            //* ko je konc win animacije, uklop play button emission
+            detectMouseClick.EnableEmission();
+            winAnim = false;
         }
+    }
+
+    IEnumerator WinningAnimBasic(int winCase, int idx1, int idx2, int idx3, int idx4, int idx5)
+    {
+        winAnim = true;
+        // Debug.Log(winCase);
+        switch (winCase)
+        {
+            case 3:
+                for (int i = 0; i < 5; i++)
+                {
+                    mats[0, idx1].EnableKeyword("_EMISSION");
+                    mats[1, idx2].EnableKeyword("_EMISSION");
+                    mats[2, idx3].EnableKeyword("_EMISSION");
+                    yield return new WaitForSeconds(0.5f);
+                    mats[0, idx1].DisableKeyword("_EMISSION");
+                    mats[1, idx2].DisableKeyword("_EMISSION");
+                    mats[2, idx3].DisableKeyword("_EMISSION");
+                    yield return new WaitForSeconds(0.5f);
+                }
+                break;
+            case 4:
+                for (int i = 0; i < 5; i++)
+                {
+                    mats[0, idx1].EnableKeyword("_EMISSION");
+                    mats[1, idx2].EnableKeyword("_EMISSION");
+                    mats[2, idx3].EnableKeyword("_EMISSION");
+                    mats[3, idx4].EnableKeyword("_EMISSION");
+                    yield return new WaitForSeconds(0.5f);
+                    mats[0, idx1].DisableKeyword("_EMISSION");
+                    mats[1, idx2].DisableKeyword("_EMISSION");
+                    mats[2, idx3].DisableKeyword("_EMISSION");
+                    mats[3, idx4].DisableKeyword("_EMISSION");
+                    yield return new WaitForSeconds(0.5f);
+                }
+                break;
+            case 5:
+                for (int i = 0; i < 5; i++)
+                {
+                    mats[0, idx1].EnableKeyword("_EMISSION");
+                    mats[1, idx2].EnableKeyword("_EMISSION");
+                    mats[2, idx3].EnableKeyword("_EMISSION");
+                    mats[4, idx5].EnableKeyword("_EMISSION");
+                    yield return new WaitForSeconds(0.5f);
+                    mats[0, idx1].DisableKeyword("_EMISSION");
+                    mats[1, idx2].DisableKeyword("_EMISSION");
+                    mats[2, idx3].DisableKeyword("_EMISSION");
+                    mats[4, idx5].DisableKeyword("_EMISSION");
+                    yield return new WaitForSeconds(0.5f);
+                }
+                break;
+            case 6:
+                for (int i = 0; i < 5; i++)
+                {
+                    mats[0, idx1].EnableKeyword("_EMISSION");
+                    mats[1, idx2].EnableKeyword("_EMISSION");
+                    mats[2, idx3].EnableKeyword("_EMISSION");
+                    mats[3, idx4].EnableKeyword("_EMISSION");
+                    mats[4, idx5].EnableKeyword("_EMISSION");
+                    yield return new WaitForSeconds(0.5f);
+                    mats[0, idx1].DisableKeyword("_EMISSION");
+                    mats[1, idx2].DisableKeyword("_EMISSION");
+                    mats[2, idx3].DisableKeyword("_EMISSION");
+                    mats[3, idx4].DisableKeyword("_EMISSION");
+                    mats[4, idx5].DisableKeyword("_EMISSION");
+                    yield return new WaitForSeconds(0.5f);
+                }
+                break;
+            default:
+                Debug.Log("Something must have gone wrong");
+                break;
+        }
+        //* ko je konc win animacije, uklop play button emission
+        detectMouseClick.EnableEmission();
+        winAnim = false;
     }
 
     void HandleInput()
     {
         // *če so se vsi nehal vrtet lahku zaženš
-        if (Input.GetKeyDown(KeyCode.Space)  && spin1.spinSpeed == 0f && spin2.spinSpeed == 0f && spin3.spinSpeed == 0f && spin4.spinSpeed == 0f && spin5.spinSpeed == 0f)
+        if ((Input.GetKeyDown(KeyCode.Space) || detectMouseClick.play) && !winAnim && spin1.spinSpeed == 0f && spin2.spinSpeed == 0f && spin3.spinSpeed == 0f && spin4.spinSpeed == 0f && spin5.spinSpeed == 0f)
         {
+            spin1.calculateSpin = true;
+            spin1.timeCounter = 0f;
+            spin2.calculateSpin = true;
+            spin2.timeCounter = 0f;
+            spin3.calculateSpin = true;
+            spin3.timeCounter = 0f;
+            spin4.calculateSpin = true;
+            spin4.timeCounter = 0f;
+            spin5.calculateSpin = true;
+            spin5.timeCounter = 0f;
+
+            // disablej emission za vse materiale
             foreach (var mat in mats)
             {
                 mat.DisableKeyword("_EMISSION");
             }
+
+            // enable play button emission
+            detectMouseClick.DisableEmission();
 
 
             rolling = true;
