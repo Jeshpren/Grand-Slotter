@@ -310,11 +310,6 @@ public class ReelManager20 : MonoBehaviour
                                         }
                                     }
                                 }
-                                else
-                                {
-                                    //* ko se ustau, sklop emission (če nis zmagou)
-                                    detectMouseClick.EnableEmission();
-                                }
                             }
                         }
                     }
