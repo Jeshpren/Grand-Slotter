@@ -26,6 +26,12 @@ public class ReelManager20 : MonoBehaviour
     public GameObject arrow2;
     public GameObject arrow3;
 
+    [Header("Mode Buttons")]
+    public GameObject modeA;
+    public GameObject modeB;
+    Material modeAMat;
+    Material modeBMat;
+
     Spin20 spin1;
     Spin20 spin2;
     Spin20 spin3;
@@ -65,15 +71,21 @@ public class ReelManager20 : MonoBehaviour
             mats[4,i] = spin5.signMaterials[i];
         }
 
-        // * nastau leve puščiče glede na mode
+        modeAMat = modeA.GetComponent<MeshRenderer>().material;
+        modeBMat = modeB.GetComponent<MeshRenderer>().material;
+        // * nastau leve puščiče in gumba glede na mode
         if (easyMode)
         {
+            modeAMat.DisableKeyword("_EMISSION");
+            modeBMat.EnableKeyword("_EMISSION");
             arrow1.GetComponent<MeshRenderer>().material.EnableKeyword("_EMISSION");
             arrow2.GetComponent<MeshRenderer>().material.EnableKeyword("_EMISSION");
             arrow3.GetComponent<MeshRenderer>().material.EnableKeyword("_EMISSION");
         }
         else
         {
+            modeAMat.EnableKeyword("_EMISSION");
+            modeBMat.DisableKeyword("_EMISSION");
             arrow1.GetComponent<MeshRenderer>().material.DisableKeyword("_EMISSION");
             arrow2.GetComponent<MeshRenderer>().material.EnableKeyword("_EMISSION");
             arrow3.GetComponent<MeshRenderer>().material.DisableKeyword("_EMISSION");
