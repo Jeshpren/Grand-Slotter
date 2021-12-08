@@ -11,15 +11,8 @@ public class ModeButtons : MonoBehaviour
     Material matThis;
     Material matOther;
 
-    bool buttonAB;  //* true for A, false for B
-
     void Start()
     {
-        if (transform.name == "ModeA Button")
-            buttonAB = true;
-        else
-            buttonAB = false;
-
         matThis = gameObject.GetComponent<MeshRenderer>().material;
         matOther = otherMode.GetComponent<MeshRenderer>().material;
     }

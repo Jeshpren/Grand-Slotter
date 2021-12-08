@@ -49,7 +49,7 @@ Material:
     - Vector1_f7084ccf4ca841bda4373a37ce256fc3: -1.11
     - _Emission: 1
     - _EmissionStrength: 1.3
-    - _TimeAtClick: 72.323204
+    - _TimeAtClick: 11.063067
     m_Colors:
     - Color_1ba799bd5fd94f45bfc214e0495d3c3e: {r: 1, g: 0, b: 0, a: 0}
     - Color_273edb0a43634ef786c9a920852ae081: {r: 0, g: 0.016898155, b: 1, a: 0}
