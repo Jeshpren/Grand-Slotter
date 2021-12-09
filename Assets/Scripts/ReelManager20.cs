@@ -18,8 +18,10 @@ public class ReelManager20 : MonoBehaviour
     public DetectMouseClick detectMouseClick;
 
     [Header("Winning UI")]
-    public GameObject winningUI;
-    TMPro.TextMeshProUGUI winningUiTMP;
+    public GameObject winningUiA;
+    public GameObject winningUiB;
+    TMPro.TextMeshProUGUI winningUiTmpA;
+    TMPro.TextMeshProUGUI winningUiTmpB;
 
     [Header("Arrows")]
     public GameObject arrow1;
@@ -53,7 +55,8 @@ public class ReelManager20 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        winningUiTMP = winningUI.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+        winningUiTmpA = winningUiA.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+        winningUiTmpB = winningUiB.GetComponentInChildren<TMPro.TextMeshProUGUI>();
 
         spin1 = reel1.GetComponent<Spin20>();
         spin2 = reel2.GetComponent<Spin20>();
@@ -107,6 +110,10 @@ public class ReelManager20 : MonoBehaviour
 
         if (rolling && rollingPrev && spin1.spinSpeed == 0f && spin2.spinSpeed == 0f && spin3.spinSpeed == 0f && spin4.spinSpeed == 0f && spin5.spinSpeed == 0f)
         {
+            //* sklop rolling zvok
+            FindObjectOfType<AudioManager>().Stop("Rolling");
+            // FindObjectOfType<AudioManager>().Play("StopRolling", 0f);
+
             // * shran indexe vidnih znakov
             int idx1_top = (int)(((spin1.angleAdjusted) / 18f) % 20);
             int idx1_middle = (int)(((spin1.angleAdjusted + 18f) / 18f) % 20);
@@ -338,6 +345,17 @@ public class ReelManager20 : MonoBehaviour
             //* za vsak element winning columna (ki vsebuje vsaj 3 string indexe)
             for (int i = 0; i < winningStrs.Count; i++)
             {
+
+                //* animacije, ki se stopnjujejo z vsakim winning stringom
+                winningUiB.SetActive(true);
+                if (i == 0)
+                    winningUiTmpB.text = "WIN";
+                else
+                    winningUiTmpB.text = (i+1) + "X WIN";
+
+                //* play winBsmall sound for each string    (za vsako dodatno kombinacijo naj se ptich zveča)
+                FindObjectOfType<AudioManager>().PlayDelayed("WinBsmall", 0.3f, 1f + (0.125f*i));
+
                 // Change winningRows into a suitable format (vrednosti so shranjene v string, zatu nemorš več prepoznt cifre, ker je lahku dvomestna)
                 string[] winningRowSplit = winningRows[i].Split(',');
 
@@ -364,24 +382,52 @@ public class ReelManager20 : MonoBehaviour
                 //* za vsak char v i-tem elementu columna izklop emission
                 for (int j = 0; j < winningCols[i].Length; j++)
                 {
-                    // mats[int.Parse(winningCols[i][j].ToString()) - 1, int.Parse(winningRows[i][j].ToString())].DisableKeyword("_EMISSION");
                     mats[int.Parse(winningCols[i][j].ToString()) - 1, int.Parse(winningRowSplit[j].ToString())].DisableKeyword("_EMISSION");
-
                 }
 
+                if (i == winningStrs.Count - 1)
+                {
+                    yield return new WaitForSeconds(0.4f);
+                    for (int j = 0; j < winningCols[i].Length; j++)
+                        mats[int.Parse(winningCols[i][j].ToString()) - 1, int.Parse(winningRowSplit[j].ToString())].EnableKeyword("_EMISSION");
+                    yield return new WaitForSeconds(0.4f);
+                    for (int j = 0; j < winningCols[i].Length; j++)
+                        mats[int.Parse(winningCols[i][j].ToString()) - 1, int.Parse(winningRowSplit[j].ToString())].DisableKeyword("_EMISSION");
+                    yield return new WaitForSeconds(0.4f);
+                    for (int j = 0; j < winningCols[i].Length; j++)
+                        mats[int.Parse(winningCols[i][j].ToString()) - 1, int.Parse(winningRowSplit[j].ToString())].EnableKeyword("_EMISSION");
+                    yield return new WaitForSeconds(0.4f);
+                    for (int j = 0; j < winningCols[i].Length; j++)
+                        mats[int.Parse(winningCols[i][j].ToString()) - 1, int.Parse(winningRowSplit[j].ToString())].DisableKeyword("_EMISSION");
+                }
+
+                // sklop winning ui
+                if (i == winningStrs.Count - 1)
+                {
+                    // yield return new WaitForSeconds(1.9f);
+                    yield return new WaitForSeconds(0.3f);
+                    winningUiB.SetActive(false);
+                }
+                else
+                    winningUiB.SetActive(false);
 
             }
             //* ko je konc win animacije, uklop play button emission
             detectMouseClick.EnableEmission();
             winAnim = false;
         }
+        else
+            detectMouseClick.EnableEmission();
+
     }
 
     IEnumerator WinningAnimBasic(int winCase, int idx1, int idx2, int idx3, int idx4, int idx5)
     {
         winAnim = true;
-        winningUI.SetActive(true);
-        yield return new WaitForSeconds(0.25f);
+        winningUiA.SetActive(true);
+        float delay = 0.05f;
+        float onOfPeriod = 0.3125f;
+        FindObjectOfType<AudioManager>().PlayDelayed("WinA", 0f, 1f);
 
         switch (winCase)
         {
@@ -389,68 +435,76 @@ public class ReelManager20 : MonoBehaviour
             case 3:
                 for (int i = 0; i < 5; i++)
                 {
-                    winningUiTMP.text = "3 MATCH WIN!";
+                    winningUiTmpA.text = "3 MATCH WIN!";
+                    if (i == 0)
+                        yield return new WaitForSeconds(delay);
                     mats[0, idx1].EnableKeyword("_EMISSION");
                     mats[1, idx2].EnableKeyword("_EMISSION");
                     mats[2, idx3].EnableKeyword("_EMISSION");
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(onOfPeriod);
                     mats[0, idx1].DisableKeyword("_EMISSION");
                     mats[1, idx2].DisableKeyword("_EMISSION");
                     mats[2, idx3].DisableKeyword("_EMISSION");
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(onOfPeriod);
                 }
                 break;
             //* matched 1234
             case 4:
                 for (int i = 0; i < 5; i++)
                 {
-                    winningUiTMP.text = "4 MATCH WIN!";
+                    winningUiTmpA.text = "4 MATCH WIN!";
+                    if (i == 0)
+                        yield return new WaitForSeconds(delay);
                     mats[0, idx1].EnableKeyword("_EMISSION");
                     mats[1, idx2].EnableKeyword("_EMISSION");
                     mats[2, idx3].EnableKeyword("_EMISSION");
                     mats[3, idx4].EnableKeyword("_EMISSION");
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(onOfPeriod);
                     mats[0, idx1].DisableKeyword("_EMISSION");
                     mats[1, idx2].DisableKeyword("_EMISSION");
                     mats[2, idx3].DisableKeyword("_EMISSION");
                     mats[3, idx4].DisableKeyword("_EMISSION");
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(onOfPeriod);
                 }
                 break;
             //* matched 1235
             case 5:
                 for (int i = 0; i < 5; i++)
                 {
-                    winningUiTMP.text = "4 MATCH WIN!";
+                    winningUiTmpA.text = "4 MATCH WIN!";
+                    if (i == 0)
+                        yield return new WaitForSeconds(delay);
                     mats[0, idx1].EnableKeyword("_EMISSION");
                     mats[1, idx2].EnableKeyword("_EMISSION");
                     mats[2, idx3].EnableKeyword("_EMISSION");
                     mats[4, idx5].EnableKeyword("_EMISSION");
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(onOfPeriod);
                     mats[0, idx1].DisableKeyword("_EMISSION");
                     mats[1, idx2].DisableKeyword("_EMISSION");
                     mats[2, idx3].DisableKeyword("_EMISSION");
                     mats[4, idx5].DisableKeyword("_EMISSION");
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(onOfPeriod);
                 }
                 break;
             //* matched 12345
             case 6:
                 for (int i = 0; i < 5; i++)
                 {
-                    winningUiTMP.text = "5 MATCH WIN!";
+                    winningUiTmpA.text = "5 MATCH WIN!";
+                    if (i == 0)
+                        yield return new WaitForSeconds(delay);
                     mats[0, idx1].EnableKeyword("_EMISSION");
                     mats[1, idx2].EnableKeyword("_EMISSION");
                     mats[2, idx3].EnableKeyword("_EMISSION");
                     mats[3, idx4].EnableKeyword("_EMISSION");
                     mats[4, idx5].EnableKeyword("_EMISSION");
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(onOfPeriod);
                     mats[0, idx1].DisableKeyword("_EMISSION");
                     mats[1, idx2].DisableKeyword("_EMISSION");
                     mats[2, idx3].DisableKeyword("_EMISSION");
                     mats[3, idx4].DisableKeyword("_EMISSION");
                     mats[4, idx5].DisableKeyword("_EMISSION");
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(onOfPeriod);
                 }
                 break;
             default:
@@ -459,7 +513,7 @@ public class ReelManager20 : MonoBehaviour
         }
         //* ko je konc win animacije, uklop play button emission
         detectMouseClick.EnableEmission();
-        winningUI.SetActive(false);
+        winningUiA.SetActive(false);
         winAnim = false;
     }
 
@@ -468,6 +522,9 @@ public class ReelManager20 : MonoBehaviour
         // *če so se vsi nehal vrtet lahku zaženš
         if ((Input.GetKeyDown(KeyCode.Space) || detectMouseClick.play) && !winAnim && spin1.spinSpeed == 0f && spin2.spinSpeed == 0f && spin3.spinSpeed == 0f && spin4.spinSpeed == 0f && spin5.spinSpeed == 0f)
         {
+            //* začni rolling zvok
+            FindObjectOfType<AudioManager>().Play("Rolling", 0f);
+
             spin1.calculateSpin = true;
             spin1.timeCounter = 0f;
             spin2.calculateSpin = true;

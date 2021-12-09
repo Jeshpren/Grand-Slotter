@@ -26,8 +26,13 @@ public class ModeButtons : MonoBehaviour
     {
         if (!reelManager.winAnim && !reelManager.rolling)
         {
+
             if (Input.GetKeyDown("1") || Input.GetKeyDown(KeyCode.Keypad1))
             {
+
+                // * play button sound
+                if (reelManager.easyMode)
+                    FindObjectOfType<AudioManager>().Play("Mode", 0f);
 
                 if (transform.name == "ModeA Button")
                 {
@@ -48,6 +53,10 @@ public class ModeButtons : MonoBehaviour
             if (Input.GetKeyDown("2") || Input.GetKeyDown(KeyCode.Keypad2))
             {
 
+                // * play button sound
+                if (!reelManager.easyMode)
+                    FindObjectOfType<AudioManager>().Play("Mode", 0f);
+                
                 if (transform.name == "ModeA Button")
                 {
                     matThis.DisableKeyword("_EMISSION");
@@ -73,11 +82,16 @@ public class ModeButtons : MonoBehaviour
     {
         if (!reelManager.winAnim && !reelManager.rolling)
         {
+
             matThis.EnableKeyword("_EMISSION");
             matOther.DisableKeyword("_EMISSION");
 
             if (transform.name == "ModeA Button")
             {
+                // * play button sound
+                if (reelManager.easyMode)
+                    FindObjectOfType<AudioManager>().Play("Mode", 0f);
+
                 reelManager.easyMode = false;
                 // * These shouldn't be called like that, but they're called rearely so it doesn't really matter
                 reelManager.arrow1.GetComponent<MeshRenderer>().material.DisableKeyword("_EMISSION");
@@ -86,6 +100,10 @@ public class ModeButtons : MonoBehaviour
             }
             else
             {
+                // * play button sound
+                if (!reelManager.easyMode)
+                    FindObjectOfType<AudioManager>().Play("Mode", 0f);
+
                 reelManager.easyMode = true;
                 reelManager.arrow1.GetComponent<MeshRenderer>().material.EnableKeyword("_EMISSION");
                 reelManager.arrow2.GetComponent<MeshRenderer>().material.EnableKeyword("_EMISSION");

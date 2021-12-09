@@ -58,8 +58,10 @@ public class DetectMouseClick : MonoBehaviour
 
     void OnMouseDown() {
         if (!reelManager.winAnim && !reelManager.rolling)
-        play = true;
-        // mouseSpace = true;
+        {
+            play = true;
+            FindObjectOfType<AudioManager>().Play("Play", 0f);
+        }
     }
 
     public void EnableEmission()
@@ -86,7 +88,7 @@ public class DetectMouseClick : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && !reelManager.winAnim && !reelManager.rolling)
         {
             play = true;
-            // mouseSpace = false;
+            FindObjectOfType<AudioManager>().Play("Play", 0f);
         }
     }
     

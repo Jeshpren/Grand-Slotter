@@ -32,7 +32,7 @@ public class Spin20 : MonoBehaviour
     // public string sign337_5 = "H";
 
     [Header("Signs")]
-    public GameObject[] signObjects = new GameObject[20];
+    // public GameObject[] signObjects = new GameObject[20];
     [HideInInspector]
     public Material[] signMaterials = new Material[20];
     [HideInInspector]
@@ -56,6 +56,7 @@ public class Spin20 : MonoBehaviour
     [Header("Play Button")]
     public DetectMouseClick detectMouseClick;
 
+
     // * v = sqrt(2*a*d).... izračun končne hitrosti ob znanem pospešku in razdlaji *ali za moj primer* izračun začetne hitrosti ob znanem pojemku in številu obratov
     // * končna rotacija = začetna rotacija + signTurns*45°
 
@@ -65,25 +66,32 @@ public class Spin20 : MonoBehaviour
     // public string bot;
     private void Awake() {
 
-        //* iz vseh sign objectou pober materiale in ih shran v signMaterials
-        for (int i = 0; i < signObjects.Length; i++)
+        // //* iz vseh sign objectou pober materiale in ih shran v signMaterials
+        // for (int i = 0; i < signObjects.Length; i++)
+        // {
+        //     signMaterials[i] = signObjects[i].GetComponent<MeshRenderer>().material;
+        //     // signMaterials[i] = new Material(signMaterials[i]);   // ne rabš delat novih, ker očinu unity poskrbi da se aplicera na vsazga posebej
+        //     // if (transform.name == "Reel Numbered 1")
+        //     // {
+        //     //     signMaterials[i].EnableKeyword("_EMISSION");
+        //     // }
+        //     //* shran imena znakov
+        //     signNames[i] = signObjects[i].name;
+        // }
+
+        //* Od vsazga childa (znaka) shran material in ime
+        for (int i = 0; i < transform.GetChild(0).childCount; i++)
         {
-            signMaterials[i] = signObjects[i].GetComponent<MeshRenderer>().material;
-            // signMaterials[i] = new Material(signMaterials[i]);   // ne rabš delat novih, ker očinu unity poskrbi da se aplicera na vsazga posebej
-            // if (transform.name == "Reel Numbered 1")
-            // {
-            //     signMaterials[i].EnableKeyword("_EMISSION");
-            // }
+            signMaterials[i] = transform.GetChild(0).GetChild(i).GetComponent<MeshRenderer>().material;
             //* shran imena znakov
-            signNames[i] = signObjects[i].name;
+            signNames[i] = transform.GetChild(0).GetChild(i).name;
         }
-
-
 
     }
 
-    private void Start() 
+    private void Start()
     {
+
         if (randomizeRotation)
         {
             float randomSign = Random.Range(1, 20);
@@ -116,6 +124,7 @@ public class Spin20 : MonoBehaviour
             SpinReel();
         }
         calculateSpinPrev = calculateSpin;
+
     }
 
 
@@ -171,7 +180,7 @@ public class Spin20 : MonoBehaviour
             if (angleAdjusted < 0f)
                 angleAdjusted += 360f;
 
-            // * shran kote za ReelManagerja ****(ne dela, dela pa če zračunaš znotrej ReelManager.cs)
+            // * shran kote za ReelManagerja ****(ne dela (zamuja za en frame), dela pa če zračunaš znotrej ReelManager.cs)
             // top = signs[(int)(((angleAdjusted) / 45f) % 8)];
             // middle = signs[(int)(((angleAdjusted + 45f) / 45f) % 8)];
             // bot = signs[(int)(((angleAdjusted + 90f) / 45f) % 8)];
