@@ -250,72 +250,94 @@ public class ReelManager20 : MonoBehaviour
                                     winningRows.Add(idx1[i].ToString() + "," + idx2[j].ToString() + "," + idx3[k].ToString());
                                     winningStrs.Add(col1[i] + col2[j] + col3[k]);
                                     
-
-                                    //* primerjej vsak element v col4
                                     bool repeat4 = false;
-                                    bool repeat4for5 = false;
-                                    string col4for5 = "";
                                     for (int l = 0; l < col4.Length; l++)
                                     {
+
                                         if (col1[i] == col4[l])
                                         {
-                                            // če si v 4tm reelu najdu dva/3 prava elementa, morš drugič/tretjič spet dodt vrstico
+                                            // če je v col4 spet isti znak...
                                             if (repeat4)
                                             {
+                                                // ...še enkrat shran col1, col2 & col3 iz prejšnje vrstice
                                                 winningCols.Add("123");
                                                 winningRows.Add(idx1[i].ToString() + "," + idx2[j].ToString() + "," + idx3[k].ToString());
                                                 winningStrs.Add(col1[i] + col2[j] + col3[k]);
-                                                repeat4for5 = true;
-                                            }
 
+                                            }
                                             // add elements to current lists
                                             winningCols[winningCols.Count-1] += "4";
                                             winningRows[winningRows.Count-1] += "," + idx4[l].ToString();
-                                            col4for5 = idx4[l].ToString();  // * to vrstico rabš za col5, če se col5 ponovi
                                             winningStrs[winningStrs.Count-1] += col4[l];
-                                            repeat4 = true;
-                                        }
-                                    }
 
-                                    bool repeat5 = false;
-                                    //* primerjej vsak element v col5
-                                    for (int l = 0; l < col5.Length; l++)
-                                    {
-                                        if (col1[i] == col5[l])
-                                        {
-                                            if (repeat5)
-                                            {   
-                                                winningCols.Add("123");
-                                                winningRows.Add(idx1[i].ToString() + "," + idx2[j].ToString() + "," + idx3[k].ToString());
-                                                winningStrs.Add(col1[i] + col2[j] + col3[k]);
-                                                // Debug.Log(winningCols[winningCols.Count - 2].Length);
-                                                if (winningCols[winningCols.Count-2].Length == 5)
+                                            repeat4 = true;
+
+
+                                            bool repeat5 = false;
+                                            for (int m = 0; m < col5.Length; m++)
+                                            {
+
+                                                if (col1[i] == col5[m])
                                                 {
-                                                    winningCols[winningCols.Count - 1] += "4";
-                                                    winningRows[winningRows.Count - 1] += "," + col4for5; 
-                                                    winningStrs[winningStrs.Count - 1] += winningStrs[winningStrs.Count - 2][3];
-                                                    
+                                                    // če je v col5 spet isti znak...
+                                                    if (repeat5)
+                                                    {
+                                                        // ...še enkrat shran col1, col2, col3 & col4 iz prejšnje vrstice
+                                                        winningCols.Add("123");
+                                                        winningRows.Add(idx1[i].ToString() + "," + idx2[j].ToString() + "," + idx3[k].ToString());
+                                                        winningStrs.Add(col1[i] + col2[j] + col3[k]);
+                                                        winningCols[winningCols.Count - 1] += "4";
+                                                        winningRows[winningRows.Count - 1] += "," + idx4[l].ToString();
+                                                        winningStrs[winningStrs.Count - 1] += col4[l];
+
+                                                    }
+                                                    // add elements to current lists
+                                                    winningCols[winningCols.Count - 1] += "5";
+                                                    winningRows[winningRows.Count - 1] += "," + idx5[m].ToString();
+                                                    winningStrs[winningStrs.Count - 1] += col5[m];
+
+                                                    repeat5 = true;
+
+
+
                                                 }
                                             }
-                                            
-                                            // ! ne dela sm še v primeru, da se in col4 in col5 ponovita
-                                            // če se je col4 ponovu, morš col5 zapisat tut v predzadnji rezultat
-                                            if (repeat4for5)
-                                            {
-                                                // Debug.Log(winningCols.Count);
-                                                winningCols[winningCols.Count - 2] += "5";
-                                                winningRows[winningRows.Count - 2] += "," + idx5[l].ToString();
-                                                winningStrs[winningStrs.Count - 2] += col5[l];
-                                            }
 
-                                            winningCols[winningCols.Count - 1] += "5";
-                                            winningRows[winningRows.Count - 1] += "," + idx5[l].ToString();
-                                            winningStrs[winningStrs.Count - 1] += col5[l];
-                                            // Debug.Log("5");
-
-                                            repeat5 = true;
                                         }
                                     }
+                                    
+                                    //* če v col4 ni blu istga znaka, naj se col5 prever posebej
+                                    if (!repeat4)
+                                    {
+                                        bool repeat5 = false;
+                                        for (int m = 0; m < col5.Length; m++)
+                                        {
+
+                                            if (col1[i] == col5[m])
+                                            {
+                                                // če je v col5 spet isti znak...
+                                                if (repeat5)
+                                                {
+                                                    // ...še enkrat shran col1, col2, col3 & col4 iz prejšnje vrstice
+                                                    winningCols.Add("123");
+                                                    winningRows.Add(idx1[i].ToString() + "," + idx2[j].ToString() + "," + idx3[k].ToString());
+                                                    winningStrs.Add(col1[i] + col2[j] + col3[k]);
+
+                                                }
+                                                // add elements to current lists
+                                                winningCols[winningCols.Count - 1] += "5";
+                                                winningRows[winningRows.Count - 1] += "," + idx5[m].ToString();
+                                                winningStrs[winningStrs.Count - 1] += col5[m];
+
+                                                repeat5 = true;
+
+
+
+                                            }
+                                        }
+                                        
+                                    }
+
                                 }
                             }
                         }
