@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ReelManager20 : MonoBehaviour
 {
@@ -17,11 +18,12 @@ public class ReelManager20 : MonoBehaviour
     [Header("Play Button")]
     public DetectMouseClick detectMouseClick;
 
-    [Header("Winning UI")]
+    [Header("UI")]
     public GameObject winningUiA;
     public GameObject winningUiB;
     TMPro.TextMeshProUGUI winningUiTmpA;
     TMPro.TextMeshProUGUI winningUiTmpB;
+    public Toggle winExampleToggle;
 
     [Header("Arrows")]
     public GameObject arrow1;
@@ -52,7 +54,7 @@ public class ReelManager20 : MonoBehaviour
     [HideInInspector]
     public bool winAnim = false;
 
-    // Start is called before the first frame update
+
     void Start()
     {
         winningUiTmpA = winningUiA.GetComponentInChildren<TMPro.TextMeshProUGUI>();
@@ -108,8 +110,11 @@ public class ReelManager20 : MonoBehaviour
         // float reelRot4 = reel4.rotation.eulerAngles.z;
         // float reelRot5 = reel5.rotation.eulerAngles.z;
 
+        //* Ko se neha vrtet
         if (rolling && rollingPrev && spin1.spinSpeed == 0f && spin2.spinSpeed == 0f && spin3.spinSpeed == 0f && spin4.spinSpeed == 0f && spin5.spinSpeed == 0f)
         {
+            ResetWinExample();
+
             //* sklop rolling zvok
             FindObjectOfType<AudioManager>().Stop("Rolling");
             // FindObjectOfType<AudioManager>().Play("StopRolling", 0f);
@@ -544,6 +549,7 @@ public class ReelManager20 : MonoBehaviour
         // *če so se vsi nehal vrtet lahku zaženš
         if ((Input.GetKeyDown(KeyCode.Space) || detectMouseClick.play) && !winAnim && spin1.spinSpeed == 0f && spin2.spinSpeed == 0f && spin3.spinSpeed == 0f && spin4.spinSpeed == 0f && spin5.spinSpeed == 0f)
         {
+
             //* začni rolling zvok
             FindObjectOfType<AudioManager>().Play("Rolling", 0f);
 
@@ -569,6 +575,98 @@ public class ReelManager20 : MonoBehaviour
 
 
             rolling = true;
+        }
+    }
+
+    public void WinExample(bool tog)
+    {
+        if (tog && !winAnim && spin1.spinSpeed == 0f && spin2.spinSpeed == 0f && spin3.spinSpeed == 0f && spin4.spinSpeed == 0f && spin5.spinSpeed == 0f)
+        {
+            //* set reel rotations
+            float rot1 = 36f, rot2 = 162f, rot3 = -54f, rot4 = 90f, rot5 = 198f;
+
+            reel1.rotation = Quaternion.Euler(rot1, 0f, 0f);
+            reel2.rotation = Quaternion.Euler(rot2, 0f, 0f);
+            reel3.rotation = Quaternion.Euler(rot3, 0f, 0f);
+            reel4.rotation = Quaternion.Euler(rot4, 0f, 0f);
+            reel5.rotation = Quaternion.Euler(rot5, 0f, 0f);
+
+            //* set initialRotation & currentRotation of each reel
+            spin1.initialRotation = rot1;
+            spin2.initialRotation = rot2;
+            spin3.initialRotation = rot3;
+            spin4.initialRotation = rot4;
+            spin5.initialRotation = rot5;
+            spin1.currentRotation = rot1;
+            spin2.currentRotation = rot2;
+            spin3.currentRotation = rot3;
+            spin4.currentRotation = rot4;
+            spin5.currentRotation = rot5;
+
+            //* set number of reel signTurns
+            if (!easyMode)
+            {
+                spin1.minSignTurns = 32;
+                spin2.minSignTurns = 55;
+                spin3.minSignTurns = 42;
+                spin4.minSignTurns = 22;
+                spin5.minSignTurns = 39;
+                spin1.maxSignTurns = 32;
+                spin2.maxSignTurns = 55;
+                spin3.maxSignTurns = 42;
+                spin4.maxSignTurns = 22;
+                spin5.maxSignTurns = 39;
+            }
+            else
+            {
+                spin1.minSignTurns = 23;
+                spin2.minSignTurns = 46;
+                spin3.minSignTurns = 33;
+                spin4.minSignTurns = 53;
+                spin5.minSignTurns = 30;
+                spin1.maxSignTurns = 23;
+                spin2.maxSignTurns = 46;
+                spin3.maxSignTurns = 33;
+                spin4.maxSignTurns = 53;
+                spin5.maxSignTurns = 30;
+            }
+        }
+        else
+        {
+            //* set number of reel signTurns
+            spin1.minSignTurns = 20;
+            spin2.minSignTurns = 20;
+            spin3.minSignTurns = 20;
+            spin4.minSignTurns = 20;
+            spin5.minSignTurns = 20;
+            spin1.maxSignTurns = 59;
+            spin2.maxSignTurns = 59;
+            spin3.maxSignTurns = 59;
+            spin4.maxSignTurns = 59;
+            spin5.maxSignTurns = 59;
+
+            winExampleToggle.isOn = false;
+        }
+    }
+
+    public void ResetWinExample()
+    {
+        //* ponastau winExample
+        if (winExampleToggle.isOn)
+        {
+
+            //* set number of reel signTurns
+            spin1.minSignTurns = 20;
+            spin2.minSignTurns = 20;
+            spin3.minSignTurns = 20;
+            spin4.minSignTurns = 20;
+            spin5.minSignTurns = 20;
+            spin1.maxSignTurns = 59;
+            spin2.maxSignTurns = 59;
+            spin3.maxSignTurns = 59;
+            spin4.maxSignTurns = 59;
+            spin5.maxSignTurns = 59;
+            winExampleToggle.isOn = false;
         }
     }
 }

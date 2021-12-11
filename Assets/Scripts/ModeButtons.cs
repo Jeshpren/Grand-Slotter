@@ -29,6 +29,9 @@ public class ModeButtons : MonoBehaviour
 
             if (Input.GetKeyDown("1") || Input.GetKeyDown(KeyCode.Keypad1))
             {
+                //* reset winExample
+                if (reelManager.easyMode)
+                    reelManager.ResetWinExample();
 
                 // * play button sound
                 if (reelManager.easyMode)
@@ -52,6 +55,9 @@ public class ModeButtons : MonoBehaviour
 
             if (Input.GetKeyDown("2") || Input.GetKeyDown(KeyCode.Keypad2))
             {
+                //* reset winExample
+                if (!reelManager.easyMode)
+                    reelManager.ResetWinExample();
 
                 // * play button sound
                 if (!reelManager.easyMode)
@@ -82,7 +88,10 @@ public class ModeButtons : MonoBehaviour
     {
         if (!reelManager.winAnim && !reelManager.rolling)
         {
+            //* reset winExample
+            reelManager.ResetWinExample();
 
+            //* set emissions
             matThis.EnableKeyword("_EMISSION");
             matOther.DisableKeyword("_EMISSION");
 

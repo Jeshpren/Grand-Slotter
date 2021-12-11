@@ -12,7 +12,8 @@ public class Spin20 : MonoBehaviour
     public int minSignTurns = 12;  // obrne naj se za najmn 12 znakov.. torej za krog pa pou
     public int maxSignTurns = 24;  // največ 4.5 kroge
     public float initialRotation;
-    float currentRotation;
+    [HideInInspector]
+    public float currentRotation;
     float endRotation;
 
     [Header("Other Reels")] //* Settings Other Reels
